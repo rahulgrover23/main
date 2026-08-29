@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Rahul Grover — Games</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="bg"></div>
+<div class="stars" id="stars"></div>
+
+<nav class="navbar">
+  <a href="index.html">🏠 Home</a>
+  <a href="games.html" class="active">🎮 Games</a>
+</nav>
+
+<div class="container">
+  <h1 style="font-size: clamp(1.6rem, 5vw, 3rem);">Game Zone 🎮</h1>
+  <div class="subtitle">Beat the (slightly cocky) computer</div>
+
+  <div class="games-grid" style="margin-top: 30px;">
+
+    <div class="game-section">
+      <p class="game-title">❌⭕ Ones and Crosses</p>
+      <p class="game-sub">You're ❌. The computer is ⭕ and thinks it's very clever.</p>
+      <div id="status">Your move!</div>
+      <div id="board"></div>
+      <button class="fun-btn" onclick="resetGame()">🔄 New game</button>
+    </div>
+
+    <div class="game-section">
+      <p class="game-title">✊✋✌️ Rock Paper Scissors</p>
+      <p class="game-sub">Best reflexes, worst trash talk.</p>
+      <div class="rps-versus" id="rps-versus">🤔 vs 🤖</div>
+      <div id="rps-status">Pick your weapon!</div>
+      <div class="rps-row">
+        <button class="rps-btn" onclick="playRPS('rock')">✊</button>
+        <button class="rps-btn" onclick="playRPS('paper')">✋</button>
+        <button class="rps-btn" onclick="playRPS('scissors')">✌️</button>
+      </div>
+      <div id="rps-score" style="color:#fff; font-size:0.9rem;">You: 0 &nbsp;|&nbsp; Computer: 0</div>
+    </div>
+
+  </div>
+
+  <div class="footer-note">made with 💜 by Rahul Grover</div>
+</div>
+
+<script src="common.js"></script>
+<script>
+  // ---------- Tic Tac Toe ----------
+  const boardEl = document.getElementById('board');
+  const statusEl = document.getElementById('status');
+  let board = Array(9).fill(null);
+  let gameOver = false;
+
+  const winLines = [
+    [0,1,2],[3,4,5],[6,7,8],
+    [0,3,6],[1,4,7],[2,5,8],
+    [0,4,8],[2,4,6]
+  ];
+
+  const trashTalk = [
+    "Ha! Beep boop, I win. 🤖",
+    "Was that even a strategy? 😏",
+    "Computers: 1, Humans: 0. As predicted.",
+    "I calculated 8 million moves ahead. You clicked randomly."
+  ];
+  const loseTalk = [
+    "Wait what. How did you do that. 😳",
+    "Ok fine, you win this one, human.",
+    "I demand a rematch! (please)",
+    "Beginner's luck. Definitely."
+  ];
+  const drawTalk = [
+    "A draw. Boring, but respectable.",
+    "Nobody wins. We're basically friends now.",
+    "Tie game! Let's go again."
+  ];
+
+  function renderBoard() {
+    boardEl.innerHTML = '';
+    board.forEach((val, i) => {
+      const cell = document.createElement('div');
+      cell.className = 'cell' + (val ? ' taken' : '');
+      cell.textContent = val === 'X' ? '❌' : val === 'O' ? '⭕' : '';
+      cell.addEventListener('click', () => handleMove(i));
+      boardEl.appendChild(cell);
+    });
+  }
+
+  function checkWinner(b) {
+    for (const line of winLines) {
+      const [a, c, d] = line;
+      if (b[a] && b[a] === b[c] && b[a] === b[d]) {
+        return { winner: b[a], line };
+      }
+    }
+    if (b.every(v => v)) return { winner: 'draw' };
+    return null;
+  }
+
+  function handleMove(i) {
+    if (gameOver || board[i]) return;
+    board[i] = 'X';
+    renderBoard();
+    const result = checkWinner(board);
+    if (result) return endGame(result);
+
+    statusEl.textContent = "Computer is thinking really hard...";
+    setTimeout(() => {
+      computerMove();
+      const result2 = checkWinner(board);
+      renderBoard();
+      if (result2) return endGame(result2);
+      statusEl.textContent = "Your move!";
+    }, 500);
+  }
+
+  function computerMove() {
+    const empty = board.map((v, i) => v === null ? i : null).filter(v => v !== null);
+    for (const i of empty) {
+      const copy = [...board]; copy[i] = 'O';
+      if (checkWinner(copy)?.winner === 'O') { board[i] = 'O'; return; }
+    }
+    for (const i of empty) {
+      const copy = [...board]; copy[i] = 'X';
+      if (checkWinner(copy)?.winner === 'X') { board[i] = 'O'; return; }
+    }
+    if (board[4] === null) { board[4] = 'O'; return; }
+    const corners = [0,2,6,8].filter(i => board[i] === null);
+    if (corners.length) { board[corners[Math.floor(Math.random()*corners.length)]] = 'O'; return; }
+    board[empty[Math.floor(Math.random() * empty.length)]] = 'O';
+  }
+
+  function endGame(result) {
+    gameOver = true;
+    if (result.winner === 'draw') {
+      statusEl.textContent = drawTalk[Math.floor(Math.random() * drawTalk.length)];
+      launchConfetti();
+    } else {
+      if (result.line) {
+        result.line.forEach(i => boardEl.children[i].classList.add('win'));
+      }
+      if (result.winner === 'X') {
+        statusEl.textContent = "You win! 🎉 " + loseTalk[Math.floor(Math.random() * loseTalk.length)];
+        launchConfetti();
+        launchBalloons();
+      } else {
+        statusEl.textContent = trashTalk[Math.floor(Math.random() * trashTalk.length)];
+      }
+    }
+  }
+
+  function resetGame() {
+    board = Array(9).fill(null);
+    gameOver = false;
+    statusEl.textContent = "Your move!";
+    renderBoard();
+  }
+
+  renderBoard();
+
+  // ---------- Rock Paper Scissors ----------
+  const rpsEmoji = { rock: '✊', paper: '✋', scissors: '✌️' };
+  const rpsBeats = { rock: 'scissors', paper: 'rock', scissors: 'paper' };
+  let userScore = 0, compScore = 0;
+
+  const rpsWinLines = [
+    "Nailed it. 💪",
+    "Too easy for you, apparently.",
+    "The computer is filing a complaint.",
+  ];
+  const rpsLoseLines = [
+    "Ha! Outsmarted by a random number generator.",
+    "The computer is doing a little dance right now.",
+    "Statistically unlikely you'd lose that... but here we are.",
+  ];
+  const rpsTieLines = [
+    "Great minds think alike, apparently.",
+    "Jinx! You owe the computer a soda.",
+  ];
+
+  function playRPS(choice) {
+    const options = ['rock', 'paper', 'scissors'];
+    const compChoice = options[Math.floor(Math.random() * 3)];
+    document.getElementById('rps-versus').textContent = rpsEmoji[choice] + ' vs ' + rpsEmoji[compChoice];
+
+    let outcome;
+    if (choice === compChoice) {
+      outcome = rpsTieLines[Math.floor(Math.random() * rpsTieLines.length)];
+    } else if (rpsBeats[choice] === compChoice) {
+      outcome = rpsWinLines[Math.floor(Math.random() * rpsWinLines.length)];
+      userScore++;
+      launchConfetti();
+    } else {
+      outcome = rpsLoseLines[Math.floor(Math.random() * rpsLoseLines.length)];
+      compScore++;
+    }
+    document.getElementById('rps-status').textContent = outcome;
+    document.getElementById('rps-score').textContent = 'You: ' + userScore + ' | Computer: ' + compScore;
+  }
+</script>
+
+</body>
+</html>
