@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Rahul Grover — Contact</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .contact-card {
+    background: rgba(0,0,0,0.35);
+    border-radius: 24px;
+    padding: 28px 26px;
+    backdrop-filter: blur(6px);
+    width: 380px;
+    max-width: 90vw;
+    text-align: center;
+  }
+
+  .contact-card h2 {
+    color: #fff;
+    font-size: 1.3rem;
+    margin: 0 0 6px;
+  }
+
+  .contact-card p.small {
+    color: rgba(255,255,255,0.75);
+    font-size: 0.9rem;
+    margin: 0 0 16px;
+  }
+
+  .whatsapp-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #25D366;
+    color: #062f14;
+    font-weight: 800;
+    font-size: 1.05rem;
+    padding: 14px 26px;
+    border-radius: 40px;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+    box-shadow: 0 0 20px rgba(37,211,102,0.4);
+  }
+
+  .whatsapp-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 0 30px rgba(37,211,102,0.7);
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.85rem;
+    margin: 26px 0;
+  }
+
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.25);
+  }
+
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: left;
+  }
+
+  .contact-form label {
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: -6px;
+  }
+
+  .contact-form input,
+  .contact-form textarea {
+    background: rgba(255,255,255,0.12);
+    border: 2px solid rgba(255,255,255,0.35);
+    border-radius: 10px;
+    color: #fff;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    resize: vertical;
+  }
+
+  .contact-form input::placeholder,
+  .contact-form textarea::placeholder {
+    color: rgba(255,255,255,0.5);
+  }
+
+  .contact-form button {
+    margin-top: 4px;
+  }
+
+  #form-msg {
+    margin-top: 12px;
+    font-size: 0.9rem;
+    color: #fff;
+    min-height: 20px;
+  }
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+<div class="stars" id="stars"></div>
+
+<nav class="navbar">
+  <a href="index.html">🏠 Home</a>
+  <a href="games.html">🎮 Games</a>
+  <a href="calculator.html">🧮 Calculator</a>
+  <a href="contact.html" class="active">✉️ Contact</a>
+</nav>
+
+<div class="container">
+  <h1 style="font-size: clamp(1.6rem, 5vw, 3rem);">Get in Touch 💬</h1>
+  <div class="subtitle">Say hi to Rahul</div>
+
+  <div class="contact-card" style="margin-top: 26px;">
+    <h2>Message on WhatsApp</h2>
+    <p class="small">Fastest way to reach me directly</p>
+    <a class="whatsapp-btn" href="https://wa.me/919996510947?text=Hi%20Rahul%2C%20I%20found%20your%20website%20and%20wanted%20to%20say%20hi!" target="_blank" rel="noopener">
+      🟢 Chat on WhatsApp
+    </a>
+
+    <div class="divider">or send a message</div>
+
+    <form class="contact-form" id="contactForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+      <label for="name">Your name</label>
+      <input type="text" id="name" name="name" placeholder="Jane Doe" required>
+
+      <label for="email">Your email</label>
+      <input type="email" id="email" name="email" placeholder="you@example.com" required>
+
+      <label for="message">Message</label>
+      <textarea id="message" name="message" rows="4" placeholder="Say something nice (or funny)..." required></textarea>
+
+      <button type="submit" class="fun-btn">📩 Send message</button>
+    </form>
+    <div id="form-msg"></div>
+  </div>
+
+  <div class="footer-note">made with 💜 by Rahul Grover</div>
+</div>
+
+<script src="common.js"></script>
+<script>
+  document.getElementById('contactForm').addEventListener('submit', function(e) {
+    const action = this.getAttribute('action');
+    if (action.includes('YOUR_FORM_ID')) {
+      e.preventDefault();
+      document.getElementById('form-msg').textContent =
+        "⚠️ Form isn't set up yet — replace YOUR_FORM_ID in contact.html with a real Formspree form ID.";
+      return;
+    }
+    document.getElementById('form-msg').textContent = "Sending... 🚀";
+  });
+</script>
+
+</body>
+</html>
